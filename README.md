@@ -1,6 +1,12 @@
 # MoEx: Distributed Mixture-of-Experts Inference on Consumer Devices via WebGPU
 
+[![DOI](https://zenodo.org/badge/1163965029.svg)](https://doi.org/10.5281/zenodo.18732132)
+
 **Browser-Based Expert FFN Disaggregation with Hedged Dispatch and Binary Transport**
+
+<p align="center">
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgqO627KWWvMzIDJ6I90cqH6nuJ63Td6Xytcz2mocTAgroQE2gVMVQo9W-uaPdWueWr9DDgOo2pFJX_-CkSijopo2H6nBAzfc-oZUXKsiqXRiG1-OMkycLme_JGXTlzyPxj5d2rrfW8g1k/s450/job_maid_meido_kissa.png" alt="MoEx" width="200">
+</p>
 
 ## Overview
 
@@ -42,6 +48,7 @@ make        # requires pdflatex + bibtex
   author  = {Kawasaki, Jun},
   journal = {arXiv preprint arXiv:XXXX.XXXXX},
   year    = {2026},
+  doi     = {10.5281/zenodo.18732132},
 }
 ```
 
