@@ -1,0 +1,236 @@
+%% ── MoE foundations ────────────────────────────────────────────────────────
+
+@inproceedings{shazeer2017outrageously,
+  title     = {Outrageously Large Neural Networks: The Sparsely-Gated
+               Mixture-of-Experts Layer},
+  author    = {Shazeer, Noam and Mirhoseini, Azalia and Maziarz, Krzysztof
+               and Davis, Andy and Le, Quoc and Hinton, Geoffrey
+               and Dean, Jeff},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2017},
+}
+
+@inproceedings{lepikhin2021gshard,
+  title     = {{GShard}: Scaling Giant Models with Conditional Computation
+               and Automatic Sharding},
+  author    = {Lepikhin, Dmitry and Lee, HyoukJoong and Xu, Yuanzhong
+               and Chen, Dehao and Firat, Orhan and Huang, Yanping
+               and Krikun, Maxim and Shazeer, Noam and Chen, Zhifeng},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2021},
+}
+
+%% ── MoE models ───────────────────────────────────────────────────────────
+
+@article{jiang2024mixtral,
+  title   = {Mixtral of Experts},
+  author  = {Jiang, Albert Q. and Sablayrolles, Alexandre and Roux, Antoine
+             and Mensch, Arthur and Savary, Blanche and Bamford, Chris
+             and Chaplot, Devendra Singh and de las Casas, Diego
+             and Hanna, Emma Bou and Bressand, Florian and others},
+  journal = {arXiv preprint arXiv:2401.04088},
+  year    = {2024},
+}
+
+@article{deepseekai2024deepseekv3,
+  title   = {{DeepSeek-V3} Technical Report},
+  author  = {{DeepSeek-AI}},
+  journal = {arXiv preprint arXiv:2412.19437},
+  year    = {2024},
+}
+
+@article{qwen2025qwen3,
+  title   = {Qwen3 Technical Report},
+  author  = {{Qwen Team}},
+  journal = {arXiv preprint arXiv:2505.09388},
+  year    = {2025},
+}
+
+%% ── Transformer / architecture ───────────────────────────────────────────
+
+@inproceedings{vaswani2017attention,
+  title     = {Attention Is All You Need},
+  author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki
+               and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N.
+               and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2017},
+}
+
+@article{shazeer2020glu,
+  title   = {{GLU} Variants Improve Transformer},
+  author  = {Shazeer, Noam},
+  journal = {arXiv preprint arXiv:2002.05202},
+  year    = {2020},
+}
+
+%% ── WebGPU / browser ML ──────────────────────────────────────────────────
+
+@misc{webgpu2024spec,
+  title        = {{WebGPU} Specification},
+  author       = {{W3C GPU for the Web Working Group}},
+  howpublished = {\url{https://www.w3.org/TR/webgpu/}},
+  year         = {2024},
+}
+
+@article{webllm2024,
+  title   = {{WebLLM}: High-Performance In-Browser {LLM} Inference Engine},
+  author  = {{MLC Team}},
+  journal = {arXiv preprint arXiv:2402.02338},
+  year    = {2024},
+}
+
+@article{nickel2024webml,
+  title   = {Machine Learning in the Browser: A Survey of {WebGPU}
+             and {WebAssembly}-Based Approaches},
+  author  = {Nickel, Maximilian and others},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+%% ── Distributed / collaborative inference ────────────────────────────────
+
+@article{borzunov2023petals,
+  title   = {Petals: Collaborative Inference and Fine-tuning of Large
+             Models},
+  author  = {Borzunov, Alexander and Baranchuk, Dmitry and Dettmers, Tim
+             and Riabinin, Maksim and Belkada, Younes and Chumachenko, Artem
+             and Samygin, Pavel and Raffel, Colin},
+  journal = {arXiv preprint arXiv:2209.01188},
+  year    = {2023},
+}
+
+@article{sheng2023flexgen,
+  title   = {{FlexGen}: High-Throughput Generative Inference of Large
+             Language Models with a Single {GPU}},
+  author  = {Sheng, Ying and Zheng, Lianmin and Yuan, Binhang
+             and Li, Zhuohan and Ryabinin, Max and Chen, Beidi
+             and Liang, Percy and R\'{e}, Christopher
+             and Stoica, Ion and Zhang, Ce},
+  journal = {arXiv preprint arXiv:2303.06865},
+  year    = {2023},
+}
+
+%% ── MoE parallelism systems ──────────────────────────────────────────────
+
+@inproceedings{hwang2023tutel,
+  title     = {Tutel: Adaptive Mixture-of-Experts at Scale},
+  author    = {Hwang, Changho and Cui, Wei and Xiong, Yifan
+               and Yang, Ziyue and Liu, Ze and Hu, Han
+               and Wang, Zilong and Salas, Rafael and Jose, Jithin
+               and Ram, Parijat and others},
+  booktitle = {Proceedings of Machine Learning and Systems (MLSys)},
+  year      = {2023},
+}
+
+@inproceedings{he2022fastermoe,
+  title     = {{FasterMoE}: Modeling and Optimizing Training of
+               Large-Scale Dynamic Pre-Trained Models},
+  author    = {He, Jiaao and Zhai, Jidong and Antunes, Tiago
+               and Wang, Haojun and Luo, Fuwen and Shi, Shangfeng
+               and Li, Qin},
+  booktitle = {Proceedings of the 27th ACM SIGPLAN Symposium on
+               Principles and Practice of Parallel Programming (PPoPP)},
+  year      = {2022},
+}
+
+@article{rajbhandari2022deepspeed,
+  title   = {{DeepSpeed-MoE}: Advancing Mixture-of-Experts Inference
+             and Training to Power Next-Generation {AI} Scale},
+  author  = {Rajbhandari, Samyam and Li, Conglong and Yao, Zhewei
+             and Zhang, Minjia and Aminabadi, Reza Yazdani
+             and Awan, Ammar Ahmad and Rasley, Jeff and He, Yuxiong},
+  journal = {arXiv preprint arXiv:2201.05596},
+  year    = {2022},
+}
+
+%% ── LLM serving ──────────────────────────────────────────────────────────
+
+@inproceedings{kwon2023vllm,
+  title     = {Efficient Memory Management for Large Language Model Serving
+               with {PagedAttention}},
+  author    = {Kwon, Woosuk and Li, Zhuohan and Zhuang, Siyuan
+               and Sheng, Ying and Zheng, Lianmin and Yu, Cody Hao
+               and Gonzalez, Joseph and Zhang, Hao and Stoica, Ion},
+  booktitle = {Proceedings of the 29th Symposium on Operating Systems
+               Principles (SOSP)},
+  year      = {2023},
+}
+
+@article{patel2024splitwise,
+  title   = {Splitwise: Efficient Generative {LLM} Inference Using
+             Phase Splitting},
+  author  = {Patel, Pratyush and Choukse, Esha and Zhang, Chaojie
+             and Shah, Anuj and Goiri, \'{I}\~{n}igo and Maleki, Saeed
+             and Bianchini, Ricardo},
+  journal = {arXiv preprint arXiv:2311.18677},
+  year    = {2024},
+}
+
+@article{zhong2024distserve,
+  title   = {{DistServe}: Disaggregating Prefill and Decoding for
+             Goodput-optimized Large Language Model Serving},
+  author  = {Zhong, Yinmin and Liu, Shengyu and Chen, Junda
+             and Hu, Jianbo and Zhu, Yibo and Liu, Xuanzhe
+             and Jin, Xin and Zhang, Hao},
+  journal = {arXiv preprint arXiv:2401.09670},
+  year    = {2024},
+}
+
+%% ── Quantization ─────────────────────────────────────────────────────────
+
+@article{frantar2023gptq,
+  title   = {{GPTQ}: Accurate Post-Training Quantization for
+             Generative Pre-trained Transformers},
+  author  = {Frantar, Elias and Ashkboos, Saleh and Hoefler, Torsten
+             and Alistarh, Dan},
+  journal = {arXiv preprint arXiv:2210.17323},
+  year    = {2023},
+}
+
+@article{lin2024awq,
+  title   = {{AWQ}: Activation-aware Weight Quantization for
+             {LLM} Compression and Acceleration},
+  author  = {Lin, Ji and Tang, Jiaming and Tang, Haotian
+             and Yang, Shang and Chen, Wei-Ming and Wang, Wei-Chen
+             and Xiao, Guangxuan and Dang, Xingyu and Gan, Chuang
+             and Han, Song},
+  journal = {arXiv preprint arXiv:2306.00978},
+  year    = {2024},
+}
+
+%% ── Tail latency / hedging ───────────────────────────────────────────────
+
+@article{dean2013tail,
+  title     = {The Tail at Scale},
+  author    = {Dean, Jeffrey and Barroso, Luiz Andr\'{e}},
+  journal   = {Communications of the ACM},
+  volume    = {56},
+  number    = {2},
+  pages     = {74--80},
+  year      = {2013},
+  publisher = {ACM},
+}
+
+@article{corbett2013spanner,
+  title     = {Spanner: {Google}'s Globally Distributed Database},
+  author    = {Corbett, James C. and Dean, Jeffrey and Epstein, Michael
+               and Fikes, Andrew and Frost, Christopher and Furman, J.J.
+               and Ghemawat, Sanjay and Gubarev, Andrey and Heiser, Christopher
+               and Hochschild, Peter and others},
+  journal   = {ACM Transactions on Computer Systems (TOCS)},
+  volume    = {31},
+  number    = {3},
+  pages     = {1--22},
+  year      = {2013},
+  publisher = {ACM},
+}
+
+%% ── Compression ──────────────────────────────────────────────────────────
+
+@misc{collet2024lz4,
+  title        = {{LZ4}: Extremely Fast Compression Algorithm},
+  author       = {Collet, Yann},
+  howpublished = {\url{https://lz4.github.io/lz4/}},
+  year         = {2024},
+}

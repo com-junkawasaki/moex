@@ -1,0 +1,22 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Keep the PDF for GitHub releases, but don't track in dev
+# Uncomment the next line to ignore PDF:
+# *.pdf
+
+# Node
+node_modules/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db

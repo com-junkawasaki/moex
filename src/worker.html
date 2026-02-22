@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoEx Worker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 2rem;
+    }
+    h1 { color: #58a6ff; margin-bottom: 1rem; font-size: 1.5rem; }
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .status.connecting { background: #d29922; color: #0d1117; }
+    .status.connected  { background: #238636; color: #fff; }
+    .status.error      { background: #da3633; color: #fff; }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    .card h2 { color: #8b949e; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #21262d;
+    }
+    .metric:last-child { border-bottom: none; }
+    .metric .label { color: #8b949e; }
+    .metric .value { color: #58a6ff; font-weight: 600; font-family: monospace; }
+    #log {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    .log-entry { color: #8b949e; }
+    .log-entry.info  { color: #58a6ff; }
+    .log-entry.ok    { color: #3fb950; }
+    .log-entry.warn  { color: #d29922; }
+    .log-entry.error { color: #f85149; }
+  </style>
+</head>
+<body>
+  <h1>MoEx Worker <span id="status" class="status connecting">Connecting…</span></h1>
+
+  <div class="card">
+    <h2>Worker Info</h2>
+    <div class="metric"><span class="label">WebGPU</span>     <span class="value" id="gpu-status">Checking…</span></div>
+    <div class="metric"><span class="label">GPU Adapter</span><span class="value" id="gpu-name">—</span></div>
+    <div class="metric"><span class="label">Experts</span>    <span class="value" id="expert-count">0</span></div>
+    <div class="metric"><span class="label">VRAM Used</span>  <span class="value" id="vram">—</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Performance</h2>
+    <div class="metric"><span class="label">Dispatches</span>      <span class="value" id="dispatch-count">0</span></div>
+    <div class="metric"><span class="label">Avg Compute (ms)</span><span class="value" id="avg-compute">—</span></div>
+    <div class="metric"><span class="label">Last Compute (ms)</span><span class="value" id="last-compute">—</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Log</h2>
+    <div id="log"></div>
+  </div>
+
+  <script type="module">
+    // ── Logging ────────────────────────────────────────────────────────
+    const logEl = document.getElementById('log');
+    function log(msg, level = '') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${level}`;
+      entry.textContent = `[${new Date().toISOString().slice(11,23)}] ${msg}`;
+      logEl.appendChild(entry);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // ── Status helpers ─────────────────────────────────────────────────
+    const statusEl    = document.getElementById('status');
+    const gpuStatusEl = document.getElementById('gpu-status');
+    const gpuNameEl   = document.getElementById('gpu-name');
+
+    function setStatus(text, cls) {
+      statusEl.textContent = text;
+      statusEl.className = `status ${cls}`;
+    }
+
+    // ── WebGPU check ───────────────────────────────────────────────────
+    async function initWebGPU() {
+      if (!navigator.gpu) {
+        gpuStatusEl.textContent = 'Not supported';
+        log('WebGPU is not available in this browser', 'error');
+        return null;
+      }
+
+      const adapter = await navigator.gpu.requestAdapter({
+        powerPreference: 'high-performance',
+      });
+
+      if (!adapter) {
+        gpuStatusEl.textContent = 'No adapter';
+        log('No WebGPU adapter found', 'error');
+        return null;
+      }
+
+      const info = await adapter.requestAdapterInfo();
+      gpuStatusEl.textContent = 'Available';
+      gpuNameEl.textContent = info.description || info.vendor || 'Unknown';
+      log(`WebGPU adapter: ${info.description || info.vendor}`, 'ok');
+
+      const device = await adapter.requestDevice({
+        requiredLimits: {
+          maxStorageBufferBindingSize: 256 * 1024 * 1024,
+          maxBufferSize: 256 * 1024 * 1024,
+        },
+      });
+
+      log('WebGPU device created', 'ok');
+      return device;
+    }
+
+    // ── Main ───────────────────────────────────────────────────────────
+    async function main() {
+      log('MoEx Worker starting…', 'info');
+
+      const device = await initWebGPU();
+      if (!device) {
+        setStatus('GPU Error', 'error');
+        return;
+      }
+
+      log('Ready to accept expert assignments', 'ok');
+      setStatus('Ready', 'connected');
+
+      // In a full implementation, the worker would:
+      // 1. Connect to hub via WebSocket
+      // 2. Receive expert assignments
+      // 3. Download weights
+      // 4. Enter dispatch loop
+      //
+      // See src/worker.ts for the full implementation.
+
+      log('Worker is in demo mode — connect to a hub for live inference', 'warn');
+    }
+
+    main().catch((err) => {
+      log(`Fatal: ${err.message}`, 'error');
+      setStatus('Error', 'error');
+    });
+  </script>
+</body>
+</html>

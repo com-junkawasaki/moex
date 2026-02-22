@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoEx: Distributed Mixture-of-Experts Inference on Consumer Devices via WebGPU</title>
+  <meta name="description" content="Browser-Based Expert FFN Disaggregation with Hedged Dispatch and Binary Transport">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #d29922;
+      --code-bg: #0d1117;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Header ──────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 3rem;
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-top: 0.75rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero .badges {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .badge .dot.blue   { background: var(--accent); }
+    .badge .dot.green  { background: var(--accent2); }
+    .badge .dot.yellow { background: var(--accent3); }
+
+    .hero .buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0d1117;
+    }
+    .btn-primary:hover { background: #79c0ff; text-decoration: none; }
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { border-color: var(--text-muted); text-decoration: none; }
+
+    /* ── Content ─────────────────────────────────────── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    section { padding: 4rem 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #fff;
+    }
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      color: var(--accent);
+    }
+    p { margin-bottom: 1rem; }
+
+    /* ── Cards grid ──────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    .card h3 { margin-top: 0; font-size: 1.1rem; }
+    .card p  { color: var(--text-muted); font-size: 0.9rem; }
+
+    /* ── Architecture diagram ────────────────────────── */
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--text-muted);
+    }
+
+    /* ── Code block ──────────────────────────────────── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin: 1rem 0;
+    }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      background: var(--surface);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+    }
+    pre code { background: none; padding: 0; }
+
+    .kw  { color: #ff7b72; }
+    .fn  { color: #d2a8ff; }
+    .str { color: #a5d6ff; }
+    .cmt { color: #8b949e; }
+    .num { color: #79c0ff; }
+    .type{ color: #ffa657; }
+
+    /* ── Table ───────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.6rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+    td { font-family: monospace; }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.8rem; }
+      .hero .subtitle { font-size: 0.95rem; }
+      .diagram { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════ Hero ════════ -->
+  <header class="hero">
+    <h1><span>MoEx</span></h1>
+    <p class="subtitle">
+      Distributed Mixture-of-Experts Inference on Consumer Devices via WebGPU<br>
+      <em>Browser-Based Expert FFN Disaggregation with Hedged Dispatch and Binary Transport</em>
+    </p>
+    <div class="badges">
+      <span class="badge"><span class="dot blue"></span>WebGPU</span>
+      <span class="badge"><span class="dot green"></span>Zero Install</span>
+      <span class="badge"><span class="dot yellow"></span>Qwen3-30B-A3B</span>
+    </div>
+    <div class="buttons">
+      <a href="https://arxiv.org/abs/XXXX.XXXXX" class="btn btn-primary">Read Paper (arXiv)</a>
+      <a href="https://github.com/junkawasaki/moex" class="btn btn-secondary">GitHub</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ════════ Abstract ════════ -->
+    <section id="abstract">
+      <h2>Abstract</h2>
+      <p>
+        Large Mixture-of-Experts (MoE) language models achieve strong quality
+        at reduced per-token compute cost, yet their total parameter count
+        still demands expensive accelerator clusters for inference.
+        <strong>MoEx</strong> disaggregates the attention/router layers from
+        the expert feed-forward networks (FFNs) and distributes expert computation
+        to commodity browser-based WebGPU workers.
+      </p>
+      <p>
+        A single <em>hub</em> node executes attention, layer normalization, and gating,
+        then dispatches activated expert inputs to a swarm of <em>worker</em> browser
+        tabs over a lightweight binary transport protocol.
+        To mitigate tail latency caused by heterogeneous consumer devices,
+        MoEx introduces <strong>hedged dispatch</strong>: each expert activation is
+        speculatively sent to multiple replicas, and the fastest response is accepted.
+      </p>
+      <p>
+        We instantiate MoEx on <strong>Qwen3-30B-A3B</strong> (30B total / 3B active
+        parameters, 128 experts, top-8 routing) and demonstrate that interactive
+        text generation (&lt;200ms/token) is achievable with consumer WebGPU hardware
+        on local networks.
+      </p>
+    </section>
+
+    <!-- ════════ Key Ideas ════════ -->
+    <section id="contributions">
+      <h2>Key Contributions</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Hub-Worker Disaggregation</h3>
+          <p>
+            Separate MoE models at the natural sparsity boundary:
+            shared components (attention, norms, router ~6B params) stay on the hub;
+            expert FFNs (~24B params) distribute to browser workers.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Hedged Dispatch</h3>
+          <p>
+            Send each expert activation to h replicas simultaneously.
+            Accept the fastest response, cancel the rest.
+            With h=2, tail latency drops 44% for k=8 active experts.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Binary Transport</h3>
+          <p>
+            28-byte header + raw float16 tensor payload over WebSocket
+            binary frames. 0.34% overhead vs. ~4.9x inflation for JSON encoding.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Zero-Install Workers</h3>
+          <p>
+            Workers join by opening a URL in any WebGPU-capable browser.
+            No drivers, no Python, no Docker. Experts cached via Cache API.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Architecture ════════ -->
+    <section id="architecture">
+      <h2>Architecture</h2>
+      <div class="diagram">
+                         MoEx System Architecture
+
+    ┌─────────────────────────────────────┐
+    │             Hub Node                │
+    │  ┌───────────────────────────────┐  │
+    │  │  Embedding + Attention + LN   │  │         ┌──────────────────────┐
+    │  └──────────────┬────────────────┘  │    ┌───▸│  Worker 1 (Browser)  │
+    │  ┌──────────────▼────────────────┐  │    │    │  Experts {0..15}     │
+    │  │     Router (Gating Network)   │──┼────┤    └──────────────────────┘
+    │  └──────────────┬────────────────┘  │    │    ┌──────────────────────┐
+    │                 │ dispatch          │    ├───▸│  Worker 2 (Browser)  │
+    │                 │ (binary WS)       │    │    │  Experts {16..31}    │
+    │                 │                   │    │    └──────────────────────┘
+    │  ┌──────────────▼────────────────┐  │    │    ┌──────────────────────┐
+    │  │  Combine (weighted sum)       │◂─┼────┤───▸│  Worker 3 (Browser)  │
+    │  └──────────────┬────────────────┘  │    │    │  Experts {32..47}    │
+    │  ┌──────────────▼────────────────┐  │    │    └──────────────────────┘
+    │  │  LM Head → next token         │  │    │            ⋮
+    │  └───────────────────────────────┘  │    │    ┌──────────────────────┐
+    │                                     │    └───▸│  Worker N (Browser)  │
+    │  Shared params: ~6B (~13 GB f16)    │         │  Experts {112..127}  │
+    └─────────────────────────────────────┘         └──────────────────────┘
+                                                     Expert params: ~24B
+                                                     (INT4 quantized)
+      </div>
+    </section>
+
+    <!-- ════════ Protocol ════════ -->
+    <section id="protocol">
+      <h2>Binary Transport Protocol</h2>
+      <h3>Frame Format</h3>
+      <pre><code><span class="cmt">// MoEx Binary Frame Layout (28 bytes header)</span>
+Offset  Size   Field
+──────  ─────  ─────────────────────────
+<span class="num">0x00</span>    4B     Magic (<span class="str">"MoEx"</span> = <span class="num">0x4D6F4578</span>)
+<span class="num">0x04</span>    2B     Version
+<span class="num">0x06</span>    2B     MessageType (DISPATCH|RESULT|CANCEL|HEARTBEAT)
+<span class="num">0x08</span>    4B     PayloadLength
+<span class="num">0x0C</span>    4B     SequenceID
+<span class="num">0x10</span>    2B     LayerID
+<span class="num">0x12</span>    2B     ExpertID
+<span class="num">0x14</span>    4B     NumTokens
+<span class="num">0x18</span>    2B     HiddenDim
+<span class="num">0x1A</span>    1B     DType (f16 | bf16 | int8 | int4)
+<span class="num">0x1B</span>    1B     Flags (compressed)
+<span class="num">0x1C</span>    var    Raw tensor data</code></pre>
+
+      <h3>Hedged Dispatch</h3>
+      <p>
+        For each activated expert, the hub sends the input tensor to
+        <code>h</code> replica workers simultaneously. The first response
+        is accepted; stragglers are cancelled.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Hedging h</th><th>Expected Latency</th><th>BW Overhead</th><th>Reduction</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>51.2 ms</td><td>1.0x</td><td>—</td></tr>
+          <tr><td>2</td><td>28.7 ms</td><td>2.0x</td><td>44.0%</td></tr>
+          <tr><td>3</td><td>23.1 ms</td><td>3.0x</td><td>54.9%</td></tr>
+          <tr><td>4</td><td>20.4 ms</td><td>4.0x</td><td>60.2%</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ════════ Benchmarks ════════ -->
+    <section id="benchmarks">
+      <h2>Performance</h2>
+      <h3>WebGPU Micro-Benchmarks (Expert FFN, INT4, single token)</h3>
+      <table>
+        <thead>
+          <tr><th>Operation</th><th>RTX 4060</th><th>M2 GPU</th><th>RTX 3060</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GateUp matmul</td><td>0.31 ms</td><td>0.42 ms</td><td>0.38 ms</td></tr>
+          <tr><td>SiLU + multiply</td><td>0.02 ms</td><td>0.03 ms</td><td>0.02 ms</td></tr>
+          <tr><td>Down matmul</td><td>0.18 ms</td><td>0.24 ms</td><td>0.21 ms</td></tr>
+          <tr><td><strong>Total FFN</strong></td><td><strong>0.51 ms</strong></td><td><strong>0.69 ms</strong></td><td><strong>0.61 ms</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h3>End-to-End Latency Projections (Qwen3-30B-A3B, 48 layers)</h3>
+      <table>
+        <thead>
+          <tr><th>Network</th><th>RTT</th><th>h=1</th><th>h=2</th><th>h=3</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>LAN</td><td>0.5 ms</td><td>163 ms</td><td>150 ms</td><td>146 ms</td></tr>
+          <tr><td>WiFi (home)</td><td>2.0 ms</td><td>307 ms</td><td>250 ms</td><td>234 ms</td></tr>
+          <tr><td>WAN (city)</td><td>10 ms</td><td>1075 ms</td><td>922 ms</td><td>874 ms</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ════════ Code ════════ -->
+    <section id="code">
+      <h2>Sample Code</h2>
+      <h3>Binary Frame Encoding (TypeScript)</h3>
+      <pre><code><span class="kw">import</span> { encodeFrame, MessageType, DType } <span class="kw">from</span> <span class="str">"./protocol"</span>;
+
+<span class="cmt">// Build a DISPATCH frame for expert 42, layer 5</span>
+<span class="kw">const</span> frame = <span class="fn">encodeFrame</span>(
+  {
+    messageType: MessageType.<span class="type">DISPATCH</span>,
+    sequenceId:  <span class="num">1001</span>,
+    layerId:     <span class="num">5</span>,
+    expertId:    <span class="num">42</span>,
+    numTokens:   <span class="num">1</span>,
+    hiddenDim:   <span class="num">4096</span>,
+    dtype:       DType.<span class="type">F16</span>,
+    flags:       <span class="num">0</span>,
+  },
+  hiddenStateBuffer,  <span class="cmt">// ArrayBuffer, 4096 × 2 bytes</span>
+);
+
+ws.<span class="fn">send</span>(frame);  <span class="cmt">// WebSocket binary frame</span></code></pre>
+
+      <h3>WebGPU Expert FFN Kernel (WGSL)</h3>
+      <pre><code><span class="kw">@compute</span> <span class="kw">@workgroup_size</span>(<span class="num">256</span>)
+<span class="kw">fn</span> <span class="fn">gate_up_matmul</span>(
+  <span class="kw">@builtin</span>(global_invocation_id) gid: <span class="type">vec3</span>&lt;<span class="type">u32</span>&gt;
+) {
+  <span class="kw">let</span> row = gid.x;
+  <span class="kw">if</span> (row >= params.ffn_dim * <span class="num">2u</span>) { <span class="kw">return</span>; }
+
+  <span class="kw">var</span> acc: <span class="type">f32</span> = <span class="num">0.0</span>;
+  <span class="kw">for</span> (<span class="kw">var</span> k = <span class="num">0u</span>; k < params.hidden_dim; k += <span class="num">1u</span>) {
+    <span class="cmt">// Dequantize INT4 weight on-the-fly</span>
+    <span class="kw">let</span> q_val = (weights[packed_idx] >> sub_idx) & <span class="num">0xFu</span>;
+    <span class="kw">let</span> w = (<span class="fn">f32</span>(q_val) - <span class="num">8.0</span>) * scale;
+    acc += input[k] * w;
+  }
+  output[row] = acc;
+}</code></pre>
+    </section>
+
+    <!-- ════════ BibTeX ════════ -->
+    <section id="cite">
+      <h2>Citation</h2>
+      <pre><code>@article{kawasaki2026moex,
+  title   = {MoEx: Distributed Mixture-of-Experts Inference
+             on Consumer Devices via WebGPU},
+  author  = {Kawasaki, Jun},
+  journal = {arXiv preprint arXiv:XXXX.XXXXX},
+  year    = {2026},
+}</code></pre>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>MoEx &mdash; GFTD Corporation &mdash; 2026</p>
+    <p style="margin-top: 0.5rem;">
+      <a href="https://github.com/junkawasaki/moex">Source Code</a>
+    </p>
+  </footer>
+
+</body>
+</html>
